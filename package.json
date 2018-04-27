@@ -1,0 +1,32 @@
+{
+  "name": "myreact",
+  "version": "1.0.0",
+  "description": "mvvm frameWork",
+  "main": "index.js",
+  "scripts": {
+    "init": "npm install --no-options -s --registry=https://registry.npm.taobao.org",
+    "dev": "npm run clean && webpack --mode development --progress --profile --colors",
+    "build": "npm run clean && webpack --mode production --progress --profile --colors",
+    "clean": "rimraf -rf ./lib"
+  },
+  "author": "fx",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "webpack": "^4.5.0",
+    "webpack-cli": "^2.0.14"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "connect": "^3.6.6",
+    "connect-multiparty": "^2.1.0",
+    "morgan": "^1.9.0",
+    "rimraf": "^2.6.2",
+    "server-static": "^2.0.5",
+    "up": "^1.0.2"
+  }
+}
