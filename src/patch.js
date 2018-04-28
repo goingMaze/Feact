@@ -9,9 +9,26 @@ const emptyNode = Vnode('', {}, [], undefined, undefined)
 const cbs = {};
 
 function isDef(n) { return n !== undefined; }
-function isUnDef(n) { return n === undefined }
+function isUnDef(n) { return n === undefined; }
+// 获取tag名
+function getVnodeInfo(vnode) {
+	let elm = {}, { tag, children, data, text } = vnode;
+	if (isDef(tag)) {
+		let hashIdx = tag.indexOf('#'),
+			dotIdx = tag.indexOf('.'),
+			hash = hashIdx > 0 ? hashIdx : tag.length,
+			dot = dotIdx > 0 ? dotIdx : tag.length;
+		if (hash < dot) elm.id = tag.slice(hash + 1, dot);
+		if (dotIdx > 0) elm.className = tag.slice(dot + 1).replace(/\./g, ' ');
+		return {
+			tag: hashIdx !== -1 || dotIdx !== -1 ? tag.slice(0, Math.min(hash, dot)) : tag,
+			...{ elm }
+		}
+	}
+	return vnode
+}
 function sameVnode(oldVnode, vnode) {
-	return oldVnode.tag === vnode.tag && oldVnode.key === vnode.key
+	return getNodeInfo(oldVnode).tag === getNodeInfo(vnode).tage && oldVnode.key === vnode.key
 }
 function domToVnode(elm) {
 	let id = elm.id ? `#${elm.id}` : '';
@@ -50,7 +67,7 @@ function patchVnode(oldVnode, vnode) {
 	if (oldVnode === vnode) return;
 	if (!sameVnode(oldVnode, vnode)) {
 		let parentElm = oldVnode.elm.parentNode;
-		let elm = createElm(vnode)
+		elm = createElm(vnode)
 		parentElm.insertBefore(elm, oldVnode.elm)
 		removeVnodes(parentElm, [oldVnode], 0, 0)
 		return;
@@ -60,6 +77,9 @@ function patchVnode(oldVnode, vnode) {
 			cbs.update[i](oldVnode, vnode)
 		}
 	}
+	let { id = '', className = '' } = getVnodeInfo(vnode)
+	elm.id = id
+	elm.className = className
 	if (isUnDef(vnode.text)) {
 		if (isDef(oldCh) && isDef(ch)) {
 			updateChildren(elm, oldCh, ch)
@@ -132,8 +152,8 @@ function createElm(vnode) {
 			dot = dotIdx > 0 ? dotIdx : tag.length;
 		let tempTag = hashIdx !== -1 || dotIdx !== -1 ? tag.slice(0, Math.min(hash, dot)) : tag,
 			elm = vnode.elm = document.createElement(tempTag);
-		if (hash < dot) elm.id = tag.slice(hash + 1, dot)
-		if (dotIdx > 0) elm.className = tag.slice(dot + 1).replace(/\./g, ' ')
+		if (hash < dot) elm.id = tag.slice(hash + 1, dot);
+		if (dotIdx > 0) elm.className = tag.slice(dot + 1).replace(/\./g, ' ');
 		if (Array.isArray(children)) {
 			for (let item of children) {
 				elm.appendChild(createElm(item))
@@ -158,9 +178,9 @@ function removeVnodes(parentElm, vnodes, startIdx, endIdx) {
 	for (; startIdx <= endIdx; startIdx++) {
 		let vnode = vnodes[startIdx]
 		if (isDef(vnode)) {
-			if(isDef(vnode.tag)) {
+			if (isDef(vnode.tag)) {
 				vnode.elm.parentNode.removeChild(vnode.elm)
-				for(let i = 0; i < cbs.remove.length; i++) {
+				for (let i = 0; i < cbs.remove.length; i++) {
 					cbs.remove[i](vnode)
 				}
 			} else {

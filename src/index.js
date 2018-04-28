@@ -3,11 +3,13 @@ console.log("start----");
 import { init } from './patch'
 import h from './d2V'
 
+import attr from './modules/attributes'
 import nClass from './modules/class'
 import props from './modules/props'
 import style from './modules/style'
 
 const patch = init([
+	attr,
 	nClass, // makes it easy to toggle classes
 	props, // for setting properties on DOM elements
 	style, // handles styling on elements with support for animations
